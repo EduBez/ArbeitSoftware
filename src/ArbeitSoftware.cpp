@@ -1,5 +1,7 @@
 // Application Header
 #include "ArbeitSoftware.h"
+#include "alternative.h"
+#include <cassert>
 
 //
 //  Test
@@ -123,7 +125,7 @@ int AlienRobot(std::vector<char>& v, int shield)
     auto damage = ComputeDamage(v);
 
     // Shield will resist
-    if (damage <= shield) {return -1;}
+    if (damage <= shield) {return -1;} //COMMENT - In this case we didn't need a single swap to save so the minimum number of swaps required is 0. -1 Was the value we agreed to represent "impossible"
 
     // Pattern to be found
     const std::vector p{'C','S'};
@@ -132,7 +134,7 @@ int AlienRobot(std::vector<char>& v, int shield)
 
     do {
         // Search for an adjacent match
-        auto it = std::search(v.begin(), v.end(), p.begin(), p.end());
+        auto it = std::search(v.begin(), v.end(), p.begin(), p.end()); //COMMENT - It searches left to right but we saw that we should swap first the right-most CS
         // Adjacent match found
         if (it != v.end()) {
             // Swap 'C' with 'S'
@@ -144,9 +146,90 @@ int AlienRobot(std::vector<char>& v, int shield)
         }
         // Increment iterations
         ++iterations;
-    } while (damage > shield);
+    } while (damage > shield); //COMMENT - It's possible that we can't save earth because after all possible swaps the damage is still higher than shield. This while will become an endless loop in this case
 
     return iterations;
+}
+
+void validateAlternative()
+{
+    assert(alternative::saveEarth("S", 3) == 0);
+    assert(alternative::saveEarth("S", 1) == 0);
+    assert(alternative::saveEarth("S", 0) == -1);
+    assert(alternative::saveEarth("C", 0) == 0);
+    assert(alternative::saveEarth("C", 10) == 0);
+
+    assert(alternative::saveEarth("CC", 1) == 0);
+    assert(alternative::saveEarth("CC", 0) == 0);
+    assert(alternative::saveEarth("CC", 50) == 0);
+
+    assert(alternative::saveEarth("SS", 1) == -1);
+    assert(alternative::saveEarth("SS", 0) == -1);
+    assert(alternative::saveEarth("SS", 2) == 0);
+    assert(alternative::saveEarth("SS", 3) == 0);
+    assert(alternative::saveEarth("SS", 50) == 0);
+
+    assert(alternative::saveEarth("SC", 1) == 0);
+    assert(alternative::saveEarth("SC", 0) == -1);
+    assert(alternative::saveEarth("SC", 2) == 0);
+    assert(alternative::saveEarth("SC", 50) == 0);
+
+    assert(alternative::saveEarth("CS", 0) == -1);
+    assert(alternative::saveEarth("CS", 1) == 1);
+    assert(alternative::saveEarth("CS", 2) == 0);
+    assert(alternative::saveEarth("CS", 3) == 0);
+    assert(alternative::saveEarth("CS", 50) == 0);
+
+    assert(alternative::saveEarth("CCC", 3) == 0);
+    assert(alternative::saveEarth("CCC", 0) == 0);
+    assert(alternative::saveEarth("CCC", 50) == 0);
+    assert(alternative::saveEarth("CCC", 1) == 0);
+
+    assert(alternative::saveEarth("SSS", 0) == -1);
+    assert(alternative::saveEarth("SSS", 1) == -1);
+    assert(alternative::saveEarth("SSS", 2) == -1);
+    assert(alternative::saveEarth("SSS", 3) == 0);
+    assert(alternative::saveEarth("SSS", 4) == 0);
+    assert(alternative::saveEarth("SSS", 50) == 0);
+
+    assert(alternative::saveEarth("SSC", 3) == 0);
+    assert(alternative::saveEarth("SSC", 2) == 0);
+    assert(alternative::saveEarth("SSC", 1) == -1);
+    assert(alternative::saveEarth("SSC", 0) == -1);
+    assert(alternative::saveEarth("SSC", 50) == 0);
+
+    assert(alternative::saveEarth("SCS", 3) == 0);
+    assert(alternative::saveEarth("SCS", 50) == 0);
+    assert(alternative::saveEarth("SCS", 1) == -1);
+    assert(alternative::saveEarth("SCS", 0) == -1);
+    assert(alternative::saveEarth("SCS", 2) == 1);
+
+    assert(alternative::saveEarth("CSS", 4) == 0);
+    assert(alternative::saveEarth("CSS", 50) == 0);
+    assert(alternative::saveEarth("CSS", 3) == 1);
+    assert(alternative::saveEarth("CSS", 2) == 2);
+    assert(alternative::saveEarth("CSS", 1) == -1);
+    assert(alternative::saveEarth("CSS", 0) == -1);
+
+    assert(alternative::saveEarth("SCC", 2) == 0);
+    assert(alternative::saveEarth("SCC", 50) == 0);
+    assert(alternative::saveEarth("SCC", 1) == 0);
+    assert(alternative::saveEarth("SCC", 0) == -1);
+
+    assert(alternative::saveEarth("CSC", 2) == 0);
+    assert(alternative::saveEarth("CSC", 50) == 0);
+    assert(alternative::saveEarth("CSC", 1) == 1);
+    assert(alternative::saveEarth("CSC", 0) == -1);
+
+    assert(alternative::saveEarth("CCS", 4) == 0);
+    assert(alternative::saveEarth("CCS", 50) == 0);
+    assert(alternative::saveEarth("CCS", 3) == 1);
+    assert(alternative::saveEarth("CCS", 2) == 1);
+    assert(alternative::saveEarth("CCS", 1) == 2);
+    assert(alternative::saveEarth("CCS", 0) == -1);
+
+    assert(alternative::saveEarth("SCCSSC", 6) == 2);
+    assert(alternative::saveEarth("CSCSS", 3) == 5);
 }
 
 //
@@ -154,7 +237,9 @@ int AlienRobot(std::vector<char>& v, int shield)
 //
 int main()
 {
-    std::vector v{'S','C','C','S','S','C'};
+    //testing the alternative
+    validateAlternative();
+    /*std::vector v{'S','C','C','S','S','C'};
     auto iterations = AlienRobot(v, 5);
 
 	std::vector<int> a{1,2,4,5,7};
@@ -170,7 +255,7 @@ int main()
     Test* t3 = func(t4);
 
     delete t3;
-    delete t4;
+    delete t4;*/
 
 	return 0;
 }

@@ -11,7 +11,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 add_executable("${PROJECT_NAME}"
     "src/ArbeitSoftware.cpp"
     "src/ArbeitSoftware.h"
-)
+    "src/alternative.h"
+    "src/alternative.cpp")
 
 # Compiler Options ////////////////////////////////////////////////////////////
 
