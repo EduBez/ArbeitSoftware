@@ -142,7 +142,7 @@ int AlienRobot(std::vector<char>& v, int shield)
             // Re-compute damage for new sequence
             damage = ComputeDamage(v);
         }
-        // Incremente iterations
+        // Increment iterations
         ++iterations;
     } while (damage > shield);
 
